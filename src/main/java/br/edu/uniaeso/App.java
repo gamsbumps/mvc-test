@@ -1,5 +1,7 @@
 package br.edu.uniaeso;
 
+import br.edu.uniaeso.view.TelaVotacao;
+
 /**
  * Hello world!
  *

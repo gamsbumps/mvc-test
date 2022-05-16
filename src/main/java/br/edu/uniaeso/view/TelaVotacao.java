@@ -1,4 +1,6 @@
-package br.edu.uniaeso;
+package br.edu.uniaeso.view;
+
+import br.edu.uniaeso.controller.EnqueteController;
 
 import java.awt.Button;
 import java.awt.GridLayout;
@@ -7,13 +9,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import java.awt.Frame;
 
 public class TelaVotacao extends Frame implements ActionListener {
 
+    private EnqueteController votacaoController;
     private TelaResultado telaResult;
     private TelaResultadoPercentual telaResultPerc;
 
@@ -22,6 +24,7 @@ public class TelaVotacao extends Frame implements ActionListener {
 
     public TelaVotacao() {
         super("Tela de Votação - Enquete");
+        votacaoController = new EnqueteController();
 
         telaResult = new TelaResultado(this);
         telaResult.setLocation(120, 5); // posicao na tela
@@ -29,17 +32,14 @@ public class TelaVotacao extends Frame implements ActionListener {
         telaResultPerc = new TelaResultadoPercentual(this);
         telaResultPerc.setLocation(250, 5); // posicao na tela
 
-        listaOpcoes = new ArrayList<String>();
-        this.opcoes = new HashMap<String, Integer>();
-
-        this.adicionaOpcao("Opção 1");
-        this.adicionaOpcao("Opção 2");
-        this.adicionaOpcao("Opção 3");
-        this.adicionaOpcao("Opção 4");
+        votacaoController.adicionaOpcao("Opção 1");
+        votacaoController.adicionaOpcao("Opção 2");
+        votacaoController.adicionaOpcao("Opção 3");
+        votacaoController.adicionaOpcao("Opção 4");
         criarBotoes();
 
-        telaResult.inicializar(listaOpcoes);
-        telaResultPerc.inicializar(listaOpcoes);
+        telaResult.inicializar(votacaoController.getListaOpcoes());
+        telaResultPerc.inicializar(votacaoController.getListaOpcoes());
 
         this.setSize(100, 120);
         this.setLayout(new GridLayout(0, 1));
@@ -56,19 +56,12 @@ public class TelaVotacao extends Frame implements ActionListener {
     }
 
     /**
-     * Adiciona uma opcao à enquete
-     **/
-    private void adicionaOpcao(String opcao) {
-        listaOpcoes.add(opcao);
-        this.opcoes.put(opcao, new Integer(0));
-    }
-
-    /**
      * Cria os botoes da tela de votos
      **/
+
     public void criarBotoes() {
         Button botao;
-        for (String opcao : listaOpcoes) {
+        for (String opcao : votacaoController.getOpcoes()) {
             botao = new Button(opcao);
             botao.setActionCommand(opcao);
             botao.addActionListener(this);
@@ -81,39 +74,12 @@ public class TelaVotacao extends Frame implements ActionListener {
      */
     public void actionPerformed(ActionEvent event) {
         String opcao = event.getActionCommand();
-        this.votar(opcao); // incrementando o voto
+        votacaoController.votar(opcao); // incrementando o voto
 
         // Atualizando a tela de resultados absolutos
-        telaResult.novoVoto(opcao, getVotos(opcao));
+        telaResult.novoVoto(opcao, votacaoController.getVotos(opcao));
 
         // Atualizando a tela de resultados percentuais
-        telaResultPerc.novoVoto(opcao, getVotos(opcao), getTotalVotos());
-    }
-
-    /**
-     * Incrementa o voto da opção entrada
-     */
-    public void votar(String opcao) {
-        int votoAtual = ((Integer) this.opcoes.get(opcao)).intValue();
-        this.opcoes.put(opcao, new Integer(++votoAtual));
-    }
-
-    /**
-     * Retorna a soma dos votos de todas as opções da enquete
-     * @return int soma dos votos de todas as opções da enquete
-     */
-    public int getTotalVotos() {
-        int total = 0;
-        for (Integer votos : opcoes.values()) {
-            total += votos.intValue();
-        }
-        return total;
-    }
-
-    /**
-     * Retorna a quantidade de votos de uma opção individual
-     */
-    public int getVotos(String opcao) {
-        return ((Integer) this.opcoes.get(opcao)).intValue();
+        telaResultPerc.novoVoto(opcao, votacaoController.getVotos(opcao), votacaoController.getTotalVotos());
     }
 }

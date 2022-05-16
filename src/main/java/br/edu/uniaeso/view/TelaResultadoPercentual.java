@@ -1,4 +1,4 @@
-package br.edu.uniaeso;
+package br.edu.uniaeso.view;
 
 import java.awt.GridLayout;
 import java.awt.Label;
